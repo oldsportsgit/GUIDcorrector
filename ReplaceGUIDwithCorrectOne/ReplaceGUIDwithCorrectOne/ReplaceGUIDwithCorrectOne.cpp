@@ -17,10 +17,10 @@ std::string ReplaceSubstring(std::string string, std::string substring, std::str
 int main()
 {
     std::cout << "Hello World!\n";
-    std::string IncorrectGUIDsPath = R"(C:\Users\Stanley Yelnats\Downloads\bbcrProj\ExportedProject\Assets\Scripts\Unity.RenderPipelines.Universal.Runtime)";
-    std::string CorrectGUIDsPath = R"(C:\Users\Stanley Yelnats\Downloads\bbcrProj\ExportedProject\Library\PackageCache\com.unity.render-pipelines.universal@10.10.1\Runtime)";
+    std::string DecompiledPackagePath = R"(C:\Users\Stanley Yelnats\Downloads\bbcrProj\ExportedProject\Assets\Scripts\Unity.RenderPipelines.Universal.Runtime)";
+    std::string ActualPackagePath = R"(C:\Users\Stanley Yelnats\Downloads\bbcrProj\ExportedProject\Library\PackageCache\com.unity.render-pipelines.universal@10.10.1\Runtime)";
     std::string UnityProjectPath = R"(C:\Users\Stanley Yelnats\Downloads\bbcrProj\ExportedProject\Assets)";
-    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(IncorrectGUIDsPath))
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(DecompiledPackagePath))
     {
         if (entry.path().extension() == ".meta")
         {
@@ -28,7 +28,7 @@ int main()
             //get file contents
             std::string contentsOfWrongGUID((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
             std::string incorrectGuid = contentsOfWrongGUID.substr(27, 32);
-            for (const auto& entry2 : std::filesystem::recursive_directory_iterator(CorrectGUIDsPath))
+            for (const auto& entry2 : std::filesystem::recursive_directory_iterator(ActualPackagePath))
             {
                 if (entry2.path().filename().string() == entry.path().filename().string())
                 {
