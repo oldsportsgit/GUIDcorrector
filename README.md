@@ -1,6 +1,6 @@
 # GUIDcorrector
 
---Instructions--
+## Instructions
 
 DecompiledPackagePath: The path for a decompiled package which is usually in "\Assets\Scripts\".
 
