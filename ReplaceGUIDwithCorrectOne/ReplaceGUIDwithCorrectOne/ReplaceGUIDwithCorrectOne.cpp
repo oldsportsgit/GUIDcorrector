@@ -19,10 +19,10 @@ int main()
     std::string IncorrectGUIDsPath;
     std::string CorrectGUIDsPath;
     std::string UnityProjectPath;
-    std::cout << "Give the path to the Incorrect guids (the package folder containing them) usually '/Assets/Scripts'\n";
+    std::cout << "Give the path to the Incorrect guids (the package folder containing them) usually '/Assets/Scripts\[Package]'\n";
     //std::cin >> IncorrectGUIDsPath;
     std::getline(std::cin, IncorrectGUIDsPath);
-    std::cout << "Give the path where the actual package is that usually being '/Library/PackageCache'\n";
+    std::cout << "Give the path where the actual package is that usually being '/Library/PackageCache\[Package]\Runtime'\n";
     std::getline(std::cin, CorrectGUIDsPath);
     std::cout << "Give the path to the Unity Project's 'Assets' folder '/Assets'\n";
     std::getline(std::cin, UnityProjectPath);
