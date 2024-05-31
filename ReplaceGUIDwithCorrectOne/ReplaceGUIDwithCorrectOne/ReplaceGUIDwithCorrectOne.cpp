@@ -20,7 +20,6 @@ int main()
     std::string CorrectGUIDsPath;
     std::string UnityProjectPath;
     std::cout << "Give the path to the Incorrect guids (the package folder containing them) usually '/Assets/Scripts/[Package]'\n";
-    //std::cin >> IncorrectGUIDsPath;
     std::getline(std::cin, IncorrectGUIDsPath);
     std::cout << "Give the path where the actual package is that usually being '/Library/PackageCache/[Package]'\n";
     std::getline(std::cin, CorrectGUIDsPath);
@@ -36,33 +35,37 @@ int main()
     }
     for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(IncorrectGUIDsPath))
     {
-        if (entry.path().extension() == ".meta")
+        if (entry.path().extension() != ".meta")
         {
-            std::ifstream ifs(entry.path());
-            //get file contents
-            std::string contentsOfWrongGUID((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-            std::string incorrectGuid = contentsOfWrongGUID.substr(27, 32);
-            for (const auto& entry2 : std::filesystem::recursive_directory_iterator(CorrectGUIDsPath))
+            continue;
+        }
+        std::ifstream ifs(entry.path());
+        //get file contents
+        std::string contentsOfWrongGUID((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+        std::string incorrectGuid = contentsOfWrongGUID.substr(27, 32);
+        for (const auto& entry2 : std::filesystem::recursive_directory_iterator(CorrectGUIDsPath))
+        {
+            if (entry2.path().filename().string() != entry.path().filename().string())
             {
-                if (entry2.path().filename().string() == entry.path().filename().string())
+                continue;
+            }
+            std::ifstream ifs2(entry2.path());
+            //get file contents
+            std::string contentsOfCorrectGUID((std::istreambuf_iterator<char>(ifs2)), (std::istreambuf_iterator<char>()));
+            std::string CorrectGuid = contentsOfCorrectGUID.substr(27, 32);
+            for (const auto& ProjectAssetFile : std::filesystem::recursive_directory_iterator(UnityProjectPath))
+            {
+                std::ifstream _fileToCorrect(ProjectAssetFile.path());
+                std::string fileToCorrectContents((std::istreambuf_iterator<char>(_fileToCorrect)), (std::istreambuf_iterator<char>()));
+                if (fileToCorrectContents.find(incorrectGuid) == std::string::npos)
                 {
-                    std::ifstream ifs2(entry2.path());
-                    //get file contents
-                    std::string contentsOfCorrectGUID((std::istreambuf_iterator<char>(ifs2)), (std::istreambuf_iterator<char>()));
-                    std::string CorrectGuid = contentsOfCorrectGUID.substr(27, 32);
-                    for (const auto& ProjectAssetFile : std::filesystem::recursive_directory_iterator(UnityProjectPath))
-                    {
-                        std::ifstream _fileToCorrect(ProjectAssetFile.path());
-                        std::string fileToCorrectContents((std::istreambuf_iterator<char>(_fileToCorrect)), (std::istreambuf_iterator<char>()));
-                        if (fileToCorrectContents.find(incorrectGuid) != std::string::npos)
-                        {
-                            std::ofstream corrected(ProjectAssetFile.path());
-                            corrected << ReplaceSubstring(fileToCorrectContents, incorrectGuid, CorrectGuid) << std::endl;
-                            std::cout << "File " + ProjectAssetFile.path().filename().string() + " has been corrected\n";
-                        }
-                    }
+                    continue;
                 }
+                std::ofstream corrected(ProjectAssetFile.path());
+                corrected << ReplaceSubstring(fileToCorrectContents, incorrectGuid, CorrectGuid) << std::endl;
+                std::cout << "File " + ProjectAssetFile.path().filename().string() + " has been corrected\n";
             }
         }
     }
+    return 0;
 }
